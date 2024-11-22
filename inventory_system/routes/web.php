@@ -28,4 +28,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/two-factor/enable', [TwoFactorController::class, 'enableTwoFactor'])->name('two-factor.enable');
+});
+
+Route::get('/two-factor/verify', [TwoFactorVerificationController::class, 'show'])->name('two-factor.verify');
+Route::post('/two-factor/verify', [TwoFactorVerificationController::class, 'verify']);
+
+Route::middleware(['auth', 'two-factor'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+
 require __DIR__.'/auth.php';
