@@ -3,11 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use PragmaRX\Google2FA\Google2FA;
 
 class TwoFactorVerificationController extends Controller
 {
-    use Illuminate\Http\Request;
-    use PragmaRX\Google2FA\Google2FA;
+
+    public function showSetupForm()
+    {
+        $google2fa = new Google2FA();
+        $user = auth()->user();
+
+        $secret = $google2fa->generateSecretKey();
+
+        return view('2fa.setup', ['secret' => $secret]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate(['two_factor_secret' => 'required']);
+
+        $user = auth()->user();
+        $user->update([
+            'two_factor_secret' => $request->input('two_factor_secret'),
+            'two_factor_enabled' => true,
+        ]);
+
+        return redirect()->route('home')->with('status', '2FA enabled successfully!');
+    }
 
     public function generateAndSendTwoFactorCode(User $user)
     {

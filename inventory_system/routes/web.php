@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,21 @@ Route::post('/two-factor/verify', [TwoFactorVerificationController::class, 'veri
 Route::middleware(['auth', 'two-factor'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+use App\Http\Controllers\TwoFactorController;
+
+Route::middleware('auth')->group(function () {
+    Route::get('/2fa/setup', [TwoFactorController::class, 'showSetupForm'])->name('2fa.setup');
+    Route::post('/2fa/setup', [TwoFactorController::class, 'store']);
+});
+
+Route::resource('orders', OrderController::class);
+Route::resource('reservations', ReservationController::class);
+Route::resource('inventory', InventoryController::class);
+
+
+
+Route::get('/analytics', [AnalyticsController::class, 'showAnalytics'])->name('analytics');
 
 
 require __DIR__.'/auth.php';
